@@ -1,2 +1,2 @@
 # correos
-Servidor envio de correo
+Aplicación destinada al envío de correo utilizando node js como lenguage del servidor.
