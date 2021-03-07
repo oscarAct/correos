@@ -1,6 +1,6 @@
 const jwt = require("jwt-simple");
 const moment = require("moment");
-const User = require("../models/userModel");
+const User = require("../models/contactModel");
 require("dotenv").config();
 
 const secretPassword = process.env.SECRET_PASS;

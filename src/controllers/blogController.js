@@ -4,9 +4,9 @@ const controller = {};
 
 controller.add = (req, res) => {
   try {
-    const { title, blogImg } = req.body;
+    const { title, blogImg, description } = req.body;
 
-    if (!title || !blogImg) {
+    if (!title || !blogImg || !description) {
       return res
         .status(202)
         .send({ status: false, message: "Missing required fields" });
@@ -15,6 +15,8 @@ controller.add = (req, res) => {
       blog.title = title;
       blog.blogImg = blogImg;
       blog.body = "";
+      blog.text = "";
+      blog.description = description;
 
       blog.save((err, saved) => {
         if (err) {
@@ -40,9 +42,9 @@ controller.add = (req, res) => {
 controller.update = (req, res) => {
   try {
     const { id } = req.params;
-    const { title, body } = req.body;
+    const { title, body, text, description } = req.body;
 
-    if (!title || !body) {
+    if (!title || !body || !text || !description) {
       return res.status(202).send({
         status: false,
         message: "Missing required fields.",
@@ -51,6 +53,8 @@ controller.update = (req, res) => {
       const update = {
         title,
         body,
+        text,
+        description,
       };
       Blog.findByIdAndUpdate({ _id: id }, update, (err, response) => {
         if (err) {
@@ -85,6 +89,89 @@ controller.getPublic = (req, res) => {
         return res.status(200).send({
           status: true,
           blogs: response,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).send({
+      status: false,
+      error: error.message,
+    });
+  }
+};
+controller.getRecomended = (req, res) => {
+  try {
+    Blog.find({ deleted: false, active: true })
+      .sort({ createdAt: "Desc" })
+      .limit(3)
+      .exec((err, response) => {
+        if (err) {
+          return res.status(202).send({
+            status: false,
+            error: err.mmessage,
+          });
+        } else {
+          return res.status(200).send({
+            status: true,
+            blogs: response,
+          });
+        }
+      });
+  } catch (error) {
+    return res.status(500).send({
+      status: false,
+      error: error.message,
+    });
+  }
+};
+controller.getbyIdPublic = (req, res) => {
+  try {
+    const { id } = req.params;
+    Blog.findOne({ _id: id, deleted: false, active: true }, (err, response) => {
+      if (err) {
+        return res.status(202).send({
+          status: false,
+          error: err.message,
+        });
+      } else if (response == null) {
+        return res.status(200).send({
+          status: false,
+          message: "No blog found",
+          blog: response,
+        });
+      } else {
+        return res.status(200).send({
+          status: true,
+          blog: response,
+        });
+      }
+    });
+  } catch (error) {
+    return res.status(500).send({
+      status: false,
+      error: error.message,
+    });
+  }
+};
+controller.getbyIdPrivate = (req, res) => {
+  try {
+    const { id } = req.params;
+    Blog.findOne({ _id: id, deleted: false }, (err, response) => {
+      if (err) {
+        return res.status(202).send({
+          status: false,
+          error: err.message,
+        });
+      } else if (response == null) {
+        return res.status(200).send({
+          status: false,
+          message: "No blog found",
+          blog: response,
+        });
+      } else {
+        return res.status(200).send({
+          status: true,
+          blog: response,
         });
       }
     });
