@@ -6,6 +6,7 @@ const cors = require("cors");
 const app = express();
 
 //Loading routes
+const contactRoutes = require("./src/routes/contact");
 const userRoutes = require("./src/routes/user");
 const blogRoutes = require("./src/routes/blog");
 
@@ -15,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // re-writing routes
-app.use("/api", userRoutes);
+app.use("/api", contactRoutes);
 app.use("/api", blogRoutes);
+app.use("/api", userRoutes);
 module.exports = app;
