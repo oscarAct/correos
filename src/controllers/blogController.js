@@ -17,12 +17,13 @@ controller.add = (req, res) => {
       blog.body = "";
       blog.text = "";
       blog.description = description;
+      blog.author = req.user.id;
 
       blog.save((err, saved) => {
         if (err) {
           return res.status(202).send({
             status: false,
-            error: err.mmessage,
+            error: err.message,
           });
         } else {
           return res.status(201).send({
@@ -60,12 +61,52 @@ controller.update = (req, res) => {
         if (err) {
           return res.status(202).send({
             status: false,
-            error: err.mmessage,
+            error: err.message,
           });
         } else {
           return res.status(200).send({
             status: true,
             blog: response,
+          });
+        }
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({
+      status: false,
+      error: error.message,
+    });
+  }
+};
+controller.addView = (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(202).send({
+        status: false,
+        message: "Missing required fields.",
+      });
+    } else {
+      Blog.findById({ _id: id }, (err, post) => {
+        if (err) {
+          return res.status(202).send({
+            status: false,
+            error: err.message,
+          });
+        } else {
+          post.views = post.views + 1;
+          post.save((failed, success) => {
+            if (failed) {
+              return res.status(202).send({
+                status: false,
+                error: failed.message,
+              });
+            } else {
+              return res.status(200).send({
+                status: true,
+              });
+            }
           });
         }
       });
@@ -83,7 +124,7 @@ controller.getPublic = (req, res) => {
       if (err) {
         return res.status(202).send({
           status: false,
-          error: err.mmessage,
+          error: err.message,
         });
       } else {
         return res.status(200).send({
@@ -91,7 +132,7 @@ controller.getPublic = (req, res) => {
           blogs: response,
         });
       }
-    });
+    }).populate("author");
   } catch (error) {
     return res.status(500).send({
       status: false,
@@ -104,11 +145,12 @@ controller.getRecomended = (req, res) => {
     Blog.find({ deleted: false, active: true })
       .sort({ createdAt: "Desc" })
       .limit(3)
+      .populate("author")
       .exec((err, response) => {
         if (err) {
           return res.status(202).send({
             status: false,
-            error: err.mmessage,
+            error: err.message,
           });
         } else {
           return res.status(200).send({
@@ -145,7 +187,7 @@ controller.getbyIdPublic = (req, res) => {
           blog: response,
         });
       }
-    });
+    }).populate("author");
   } catch (error) {
     return res.status(500).send({
       status: false,
@@ -184,7 +226,7 @@ controller.getbyIdPrivate = (req, res) => {
 };
 controller.getPrivateBlogs = (req, res) => {
   try {
-    Blog.find({ deleted: false }, (err, response) => {
+    Blog.find({ deleted: false, author: req.user.id }, (err, response) => {
       if (err) {
         return res.status(202).send({
           status: false,

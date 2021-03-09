@@ -1,14 +1,15 @@
 const User = require("../models/contactModel");
 const nodemailer = require("nodemailer");
 const moment = require("moment");
+const env = require("dotenv");
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.hostinger.com",
-  port: 587,
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: "contacto@omorales.tech", // generated ethereal user
-    pass: "Oscar86220322", // generated ethereal password
+    user: process.env.EMAIL_ADD, // generated ethereal user
+    pass: process.env.EMAIL_PASS,
   },
 });
 const controller = {};

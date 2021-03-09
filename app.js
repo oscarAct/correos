@@ -9,6 +9,7 @@ const app = express();
 const contactRoutes = require("./src/routes/contact");
 const userRoutes = require("./src/routes/user");
 const blogRoutes = require("./src/routes/blog");
+const token = require("./src/routes/token");
 
 app.use(cors());
 
@@ -19,4 +20,5 @@ app.use(bodyParser.json());
 app.use("/api", contactRoutes);
 app.use("/api", blogRoutes);
 app.use("/api", userRoutes);
+app.use("/api", token);
 module.exports = app;
