@@ -4,16 +4,6 @@ const jwt = require("../services/jwt");
 const generator = require("generate-password");
 const nodemailer = require("nodemailer");
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.titan.email",
-  port: 465,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: "soporte@luxecr.com", // generated ethereal user
-    pass: "Oscar86220322", // generated ethereal password
-  },
-});
-
 const saltRounds = 10;
 const controller = {};
 controller.saveUser = async (req, res) => {
