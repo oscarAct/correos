@@ -1,14 +1,14 @@
 const User = require("../models/contactModel");
 const nodemailer = require("nodemailer");
 const moment = require("moment");
-const env = require("dotenv");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: process.env.EMAIL_PORT,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.EMAIL_ADD, // generated ethereal user
+    user: process.env.EMAIL_ADDRESS, // generated ethereal user
     pass: process.env.EMAIL_PASS,
   },
 });
@@ -49,6 +49,7 @@ controller.sendMail = (req, res) => {
               if (err) {
                 return res.status(500).send({
                   status: false,
+                  message: "Error saving data",
                   error: {
                     message: err.message,
                   },
@@ -74,13 +75,16 @@ controller.sendMail = (req, res) => {
                     User.findByIdAndDelete(id, (fail, success) => {
                       if (fail) {
                         console.log(fail.message);
-                        return res
-                          .status(500)
-                          .send({ status: false, error: fail.message });
+                        return res.status(500).send({
+                          status: false,
+                          error: fail,
+                          message: "Failed deleting data.",
+                        });
                       } else {
                         return res.status(500).send({
                           status: false,
                           error: failed.message,
+                          message: "Mensaje",
                         });
                       }
                     });
@@ -101,6 +105,7 @@ controller.sendMail = (req, res) => {
     return res.status(500).send({
       status: false,
       error: error.message,
+      message: "Catched error.",
     });
   }
 };
