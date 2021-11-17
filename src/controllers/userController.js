@@ -3,6 +3,17 @@ const bcrypt = require("bcrypt");
 const jwt = require("../services/jwt");
 const generator = require("generate-password");
 const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+const transporter = nodemailer.createTransport({
+  host: process.env.EMAIL_HOST,
+  port: process.env.EMAIL_PORT,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.EMAIL_ADDRESS, // generated ethereal user
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const saltRounds = 10;
 const controller = {};
@@ -517,7 +528,7 @@ controller.recoverPassword = (req, res) => {
                 });
               } else {
                 const mailOptions = {
-                  from: "soporte@luxecr.com",
+                  from: "contacto@omorales.tech",
                   to: email,
                   subject: "Recuperacion de contraseña",
                   text:
